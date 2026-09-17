@@ -13,6 +13,13 @@ impl NetworkTransmissionProtocol {
 
         &PROTOCOLS
     }
+
+    pub fn label(&self) -> &'static str {
+        match self {
+            NetworkTransmissionProtocol::Tcp => "TCP",
+            NetworkTransmissionProtocol::Udp => "UDP",
+        }
+    }
 }
 
 pub(crate) enum PortState {
@@ -32,7 +39,7 @@ pub(crate) enum PortState {
 
 impl PortState {
     /// Short label for the UI.
-    pub fn label(self) -> &'static str {
+    pub fn label(&self) -> &'static str {
         match self {
             PortState::Open => "open",
             PortState::Closed => "closed",
