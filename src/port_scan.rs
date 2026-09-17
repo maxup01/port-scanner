@@ -1,13 +1,15 @@
-use crate::primitives::NetworkTransmissionProtocol;
-use std::io;
+use crate::primitives::{NetworkTransmissionProtocol, PortState};
+use std::{collections::HashMap, io};
 
 pub(crate) async fn port_scan(addr: String, port: usize) -> io::Result<()> {
     for protocol in NetworkTransmissionProtocol::protocols() {
-        let result = open_connection(addr.as_str(), port, protocol.clone());
+        let result = open_connection(addr.as_str(), port, protocol.clone()).await;
     }
 
     Ok(())
 }
+
+pub(crate) type PortScanResult = HashMap<NetworkTransmissionProtocol, PortState>;
 
 enum Connection {
     Udp(tokio::net::UdpSocket),
