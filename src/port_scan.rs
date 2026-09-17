@@ -29,30 +29,6 @@ enum Connection {
     Tcp(tokio::net::TcpStream),
 }
 
-async fn open_connection(
-    addr: &str,
-    port: usize,
-    protocol: NetworkTransmissionProtocol,
-) -> io::Result<Connection> {
-    let addr = format!("{addr}:{port}");
-
-    let connection = match protocol {
-        NetworkTransmissionProtocol::Tcp => {
-            let socket = tokio::net::TcpStream::connect(addr).await?;
-
-            Connection::Tcp(socket)
-        }
-        NetworkTransmissionProtocol::Udp => {
-            let socket = tokio::net::UdpSocket::bind("0.0.0.0:0").await?;
-            socket.connect(addr).await?;
-
-            Connection::Udp(socket)
-        }
-    };
-
-    Ok(connection)
-}
-
 async fn check_tcp(addr: SocketAddr, wait: Duration) -> PortState {
     match tokio::time::timeout(wait, tokio::net::TcpStream::connect(addr)).await {
         Ok(Ok(_stream)) => PortState::Open,
