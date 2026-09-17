@@ -5,11 +5,18 @@ use std::{
     io::{self, ErrorKind},
 };
 
-pub(crate) async fn port_scan(addr: String, port: usize) -> PortScanResult {
-    let scan_result: PortScanResult = HashMap::new();
+pub(crate) async fn port_scan(addr: SocketAddr) -> PortScanResult {
+    let mut scan_result: PortScanResult = HashMap::new();
 
     for protocol in NetworkTransmissionProtocol::protocols() {
-        let result = open_connection(addr.as_str(), port, protocol.clone()).await;
+        let result = match protocol {
+            NetworkTransmissionProtocol::Tcp => check_tcp(addr, Duration::from_millis(2500)).await,
+            NetworkTransmissionProtocol::Udp => {
+                check_udp_state(addr, Duration::from_millis(2500)).await
+            }
+        };
+
+        scan_result.insert(protocol.clone(), result);
     }
 
     scan_result
