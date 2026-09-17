@@ -2,6 +2,10 @@ use crate::primitives::NetworkTransmissionProtocol;
 use std::io;
 
 pub(crate) async fn port_scan(addr: String, port: usize) -> io::Result<()> {
+    for protocol in NetworkTransmissionProtocol::protocols() {
+        let result = open_connection(addr.as_str(), port, protocol.clone());
+    }
+
     Ok(())
 }
 
@@ -11,7 +15,7 @@ enum Connection {
 }
 
 async fn open_connection(
-    addr: String,
+    addr: &str,
     port: usize,
     protocol: NetworkTransmissionProtocol,
 ) -> io::Result<Connection> {
