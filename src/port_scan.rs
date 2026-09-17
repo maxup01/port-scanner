@@ -10,7 +10,9 @@ pub(crate) async fn port_scan(addr: SocketAddr) -> PortScanResult {
 
     for protocol in NetworkTransmissionProtocol::protocols() {
         let result = match protocol {
-            NetworkTransmissionProtocol::Tcp => check_tcp(addr, Duration::from_millis(2500)).await,
+            NetworkTransmissionProtocol::Tcp => {
+                check_tcp_state(addr, Duration::from_millis(2500)).await
+            }
             NetworkTransmissionProtocol::Udp => {
                 check_udp_state(addr, Duration::from_millis(2500)).await
             }
@@ -24,7 +26,7 @@ pub(crate) async fn port_scan(addr: SocketAddr) -> PortScanResult {
 
 pub(crate) type PortScanResult = HashMap<NetworkTransmissionProtocol, PortState>;
 
-async fn check_tcp(addr: SocketAddr, wait: Duration) -> PortState {
+async fn check_tcp_state(addr: SocketAddr, wait: Duration) -> PortState {
     match tokio::time::timeout(wait, tokio::net::TcpStream::connect(addr)).await {
         Ok(Ok(_stream)) => PortState::Open,
         Ok(Err(e)) => match e.kind() {
