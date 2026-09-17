@@ -24,11 +24,6 @@ pub(crate) async fn port_scan(addr: SocketAddr) -> PortScanResult {
 
 pub(crate) type PortScanResult = HashMap<NetworkTransmissionProtocol, PortState>;
 
-enum Connection {
-    Udp(tokio::net::UdpSocket),
-    Tcp(tokio::net::TcpStream),
-}
-
 async fn check_tcp(addr: SocketAddr, wait: Duration) -> PortState {
     match tokio::time::timeout(wait, tokio::net::TcpStream::connect(addr)).await {
         Ok(Ok(_stream)) => PortState::Open,
