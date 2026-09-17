@@ -1,3 +1,5 @@
+use port_scanner::run;
+
 fn main() {
-    println!("Hello, world!");
+    run();
 }
