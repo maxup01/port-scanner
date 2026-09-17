@@ -57,3 +57,40 @@ async fn check_tcp(addr: SocketAddr, wait: Duration) -> PortState {
         Err(_elapsed) => PortState::Filtered,
     }
 }
+
+async fn check_udp_state(addr: SocketAddr, wait: Duration) -> PortState {
+    let bind_addr = if addr.is_ipv4() {
+        "0.0.0.0:0"
+    } else {
+        "[::]:0"
+    };
+
+    let socket = match tokio::net::UdpSocket::bind(bind_addr).await {
+        Ok(s) => s,
+        Err(_) => return PortState::Filtered,
+    };
+
+    if socket.connect(addr).await.is_err() {
+        return PortState::Unreachable;
+    }
+
+    if socket.send(&[]).await.is_err() {
+        return PortState::Filtered;
+    }
+
+    let mut buf = [0u8; 512];
+
+    match tokio::time::timeout(wait, socket.recv(&mut buf)).await {
+        Ok(Ok(_n)) => PortState::Open,
+        Ok(Err(e))
+            if matches!(
+                e.kind(),
+                ErrorKind::ConnectionRefused | ErrorKind::ConnectionReset
+            ) =>
+        {
+            PortState::Closed
+        }
+        Ok(Err(_)) => PortState::Filtered,
+        Err(_elapsed) => PortState::OpenOrFiltered,
+    }
+}
