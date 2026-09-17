@@ -1,9 +1,6 @@
 use crate::primitives::{NetworkTransmissionProtocol, PortState};
 use core::{net::SocketAddr, time::Duration};
-use std::{
-    collections::HashMap,
-    io::{self, ErrorKind},
-};
+use std::{collections::HashMap, io::ErrorKind};
 
 pub(crate) async fn port_scan(addr: SocketAddr) -> PortScanResult {
     let mut scan_result: PortScanResult = HashMap::new();
