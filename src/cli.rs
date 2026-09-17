@@ -6,8 +6,8 @@ pub(crate) struct Cli {
     pub address: String,
 
     #[arg(required = false, short, long = "fport", default_value_t = 0)]
-    pub first_port: usize,
+    pub first_port: u16,
 
     #[arg(required = false, short, long = "lport", default_value_t = 65535)]
-    pub last_port: usize,
+    pub last_port: u16,
 }
