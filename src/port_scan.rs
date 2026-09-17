@@ -1,12 +1,18 @@
 use crate::primitives::{NetworkTransmissionProtocol, PortState};
-use std::{collections::HashMap, io};
+use core::{net::SocketAddr, time::Duration};
+use std::{
+    collections::HashMap,
+    io::{self, ErrorKind},
+};
 
-pub(crate) async fn port_scan(addr: String, port: usize) -> io::Result<()> {
+pub(crate) async fn port_scan(addr: String, port: usize) -> PortScanResult {
+    let scan_result: PortScanResult = HashMap::new();
+
     for protocol in NetworkTransmissionProtocol::protocols() {
         let result = open_connection(addr.as_str(), port, protocol.clone()).await;
     }
 
-    Ok(())
+    scan_result
 }
 
 pub(crate) type PortScanResult = HashMap<NetworkTransmissionProtocol, PortState>;
@@ -38,4 +44,16 @@ async fn open_connection(
     };
 
     Ok(connection)
+}
+
+async fn check_tcp(addr: SocketAddr, wait: Duration) -> PortState {
+    match tokio::time::timeout(wait, tokio::net::TcpStream::connect(addr)).await {
+        Ok(Ok(_stream)) => PortState::Open,
+        Ok(Err(e)) => match e.kind() {
+            ErrorKind::ConnectionRefused => PortState::Closed,
+            ErrorKind::HostUnreachable => PortState::Unreachable,
+            _ => PortState::Filtered,
+        },
+        Err(_elapsed) => PortState::Filtered,
+    }
 }
