@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub(crate) enum NetworkTransmissionProtocol {
     Tcp,
     Udp,
