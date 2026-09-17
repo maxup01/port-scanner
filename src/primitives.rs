@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Eq, Hash, PartialEq, Clone)]
 pub(crate) enum NetworkTransmissionProtocol {
     Tcp,
     Udp,
