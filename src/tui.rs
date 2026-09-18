@@ -1,4 +1,5 @@
-use crate::primitives::PortState;
+use crate::primitives::{PortState, ScanEvent};
+use crossbeam_channel::Receiver;
 use ratatui::style::{Color, Modifier, Style};
 
 pub fn port_state_color(state: &PortState) -> Color {
@@ -21,8 +22,4 @@ pub fn port_state_style(state: &PortState) -> Style {
     }
 }
 
-pub(crate) struct Tui {}
-
-impl Tui {
-    pub fn render() {}
-}
+pub fn render_tui(rx: Receiver<ScanEvent>) {}
