@@ -20,3 +20,9 @@ pub fn port_state_style(state: &PortState) -> Style {
         _ => style,
     }
 }
+
+pub(crate) struct Tui {}
+
+impl Tui {
+    pub fn render() {}
+}
