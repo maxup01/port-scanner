@@ -4,4 +4,4 @@ mod primitives;
 mod run;
 mod tui;
 
-pub use run::run;
+pub use run::App;

@@ -1,5 +1,6 @@
-use port_scanner::run;
+use port_scanner::App;
 
-fn main() {
-    run();
+#[tokio::main]
+async fn main() {
+    let _ = App::run().await;
 }

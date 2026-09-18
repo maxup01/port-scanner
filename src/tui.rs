@@ -1,4 +1,7 @@
-use crate::primitives::{PortState, ScanEvent};
+use crate::{
+    port_scan::PortScanResult,
+    primitives::{PortState, ScanEvent},
+};
 use crossbeam_channel::Receiver;
 use ratatui::style::{Color, Modifier, Style};
 
@@ -20,6 +23,15 @@ pub fn port_state_style(state: &PortState) -> Style {
         PortState::Closed => style.add_modifier(Modifier::DIM),
         _ => style,
     }
+}
+
+pub struct Tui {
+    pub target_host: String,
+    pub port_range: (u16, u16),
+    pub results: Vec<PortScanResult>,
+    pub scanned: usize,
+    pub total: usize,
+    pub scanning: bool,
 }
 
 pub fn render_tui(rx: Receiver<ScanEvent>) {}
