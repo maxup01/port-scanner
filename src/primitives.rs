@@ -1,3 +1,5 @@
+use crate::port_scan::PortScanResult;
+
 #[derive(Eq, Hash, PartialEq, Clone)]
 pub(crate) enum NetworkTransmissionProtocol {
     Tcp,
@@ -48,4 +50,12 @@ impl PortState {
             PortState::Unreachable => "unreachable",
         }
     }
+}
+
+pub(crate) enum ScanEvent {
+    ScanResult {
+        port: u16,
+        scan_results: PortScanResult,
+    },
+    ScanEnd,
 }
