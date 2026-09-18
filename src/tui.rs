@@ -98,6 +98,7 @@ struct Tui {
     summary: Summary,
     selected: usize,
     offset: usize,
+    page: usize,
     follow: bool,
     hide_closed: bool,
     done: bool,
@@ -113,6 +114,7 @@ impl Tui {
             summary: Summary::default(),
             selected: 0,
             offset: 0,
+            page: 1,
             follow: true,
             hide_closed: false,
             done: false,
@@ -188,8 +190,8 @@ impl Tui {
             KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => return true,
             KeyCode::Up | KeyCode::Char('k') => self.scroll_by(-1),
             KeyCode::Down | KeyCode::Char('j') => self.scroll_by(1),
-            KeyCode::PageUp => self.scroll_by(-20),
-            KeyCode::PageDown => self.scroll_by(20),
+            KeyCode::PageUp => self.scroll_by(-(self.page as isize)),
+            KeyCode::PageDown => self.scroll_by(self.page as isize),
             KeyCode::Home | KeyCode::Char('g') => {
                 self.follow = false;
                 self.selected = 0;
@@ -352,6 +354,8 @@ impl Tui {
     }
 
     fn window(&mut self, height: usize) -> Range<usize> {
+        self.page = height.max(1);
+
         if self.follow {
             self.selected = self.visible.len() - 1;
         }
